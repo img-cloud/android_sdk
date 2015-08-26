@@ -2,6 +2,7 @@ package com.liftoffllc.imgcloudlib;
 
 import android.os.AsyncTask;
 
+import com.liftoffllc.imgcloudlib.Error.ImageUploadError;
 import com.liftoffllc.imgcloudlib.interfaces.ApiService;
 import com.liftoffllc.imgcloudlib.interfaces.onImageUploaded;
 import com.liftoffllc.imgcloudlib.models.ImgUploadResponse;
@@ -32,13 +33,6 @@ public class ImageUpload {
         this.apikey = apikey;
         this.path = path;
         this.taskComplete = task;
-        if(path.equals(null) || apikey.equals(null)){
-            taskComplete.onUploadCompleted(null);
-        }else {
-            nPath = new File(path);
-
-            service = RestService.getService();
-        }
 
 
     }
@@ -48,7 +42,8 @@ public class ImageUpload {
 
         try {
             new AsyncTask<ImgUploadResponse, Integer, ImgUploadResponse>() {
-
+                ImgUploadResponse feed;
+                ImageUploadError err;
 
                 @Override
                 protected void onPreExecute() {
@@ -58,21 +53,36 @@ public class ImageUpload {
                 @Override
                 protected ImgUploadResponse doInBackground(ImgUploadResponse... longs) {
                     try {
+                        nPath = new File(path);
+
+                        service = RestService.getService();
                         TypedFile tf = new TypedFile("image", nPath);
                         TypedString ts = new TypedString(apikey);
-                        ImgUploadResponse feed = service.getFeed(tf, ts);
+                        feed = service.getFeed(tf, ts);
                         return feed;
-                    }catch(RetrofitError error){
+                    } catch (RetrofitError error) {
                         error.printStackTrace();
+                        err = new ImageUploadError();
+                        err.setMessage(error.getMessage().toString());
+                        return null;
+                    } catch (ImageUploadError ex) {
+                        ex.printStackTrace();
+                        err = ex;
+                        return null;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        err = new ImageUploadError();
+                        err.setMessage(ex.getMessage().toString());
                         return null;
                     }
+
                 }
 
                 @Override
                 protected void onPostExecute(ImgUploadResponse imgUploadResponse) {
                     super.onPostExecute(imgUploadResponse);
 
-                    taskComplete.onUploadCompleted(imgUploadResponse);
+                    taskComplete.onUploadCompleted(imgUploadResponse == null ? err : imgUploadResponse);
 
                 }
             }.execute().get();
