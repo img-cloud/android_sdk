@@ -5,21 +5,13 @@ package com.liftoffllc.imgcloudlib.Error;
  */
 public class ImageUploadError extends RuntimeException {
 
-    private int statusCode;
+
     private String err;
     private String message;
 
     public ImageUploadError() {
         super();
 
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
     }
 
     public String getErr() {

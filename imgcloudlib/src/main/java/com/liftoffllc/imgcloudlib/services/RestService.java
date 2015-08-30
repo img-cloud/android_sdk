@@ -6,7 +6,7 @@ import com.liftoffllc.imgcloudlib.interfaces.ApiService;
 import retrofit.RestAdapter;
 
 /**
- * Created by ckumar on 10/8/15.
+ * Class to call rest service
  */
 public class RestService {
 

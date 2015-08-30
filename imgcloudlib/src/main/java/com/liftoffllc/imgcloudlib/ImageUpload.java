@@ -40,7 +40,7 @@ public class ImageUpload {
     public void execute() {
 
 
-        try {
+
             new AsyncTask<ImgUploadResponse, Integer, ImgUploadResponse>() {
                 ImgUploadResponse feed;
                 ImageUploadError err;
@@ -61,9 +61,16 @@ public class ImageUpload {
                         feed = service.getFeed(tf, ts);
                         return feed;
                     } catch (RetrofitError error) {
-                        error.printStackTrace();
-                        err = new ImageUploadError();
-                        err.setMessage(error.getMessage().toString());
+                        try {
+                            error.printStackTrace();
+                            err = new ImageUploadError();
+
+                            err.setMessage(error.getMessage().toString());
+                        } catch(Exception er){
+                            err = new ImageUploadError();
+
+                            err.setMessage("invalid api key");
+                            }
                         return null;
                     } catch (ImageUploadError ex) {
                         ex.printStackTrace();
@@ -72,7 +79,8 @@ public class ImageUpload {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         err = new ImageUploadError();
-                        err.setMessage(ex.getMessage().toString());
+
+                        err.setMessage("Value can not be null");
                         return null;
                     }
 
@@ -85,12 +93,8 @@ public class ImageUpload {
                     taskComplete.onUploadCompleted(imgUploadResponse == null ? err : imgUploadResponse);
 
                 }
-            }.execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+            }.execute();
+
 
     }
 

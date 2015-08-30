@@ -9,7 +9,7 @@ import retrofit.mime.TypedFile;
 import retrofit.mime.TypedString;
 
 /**
- * Created by Nikita on 23/08/15.
+ * API service for retro fit
  */
 public interface ApiService {
 

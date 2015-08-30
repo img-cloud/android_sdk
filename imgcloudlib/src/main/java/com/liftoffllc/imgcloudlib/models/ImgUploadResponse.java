@@ -1,7 +1,8 @@
 package com.liftoffllc.imgcloudlib.models;
 
 /**
- * Created by Nikita on 24/08/15.
+* Class to handle the response
+ *
  */
 public class ImgUploadResponse {
 

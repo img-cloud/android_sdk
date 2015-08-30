@@ -2,7 +2,7 @@ package com.liftoffllc.imgcloudlib.interfaces;
 
 
 /**
- * Created by Nikita on 24/08/15.
+ * Interface to get the result in your app
  */
 public interface onImageUploaded {
     public void onUploadCompleted(Object result);
