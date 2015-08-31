@@ -10,23 +10,15 @@ Each request for building a URL must have api_key which will get after signing u
 
 Here's an example to configure 
 
-            onImageUploaded imgUploadResponse;
-            UploadImg image;
-            
-            image = new UploadImg();
-            image.setImage(imagePath);
-            image.setApiKey(apiKey);
-            image.setFolder(folderName);
-            image.setTags(tag);
-            new ImageUpload(image,imgUploadResponse).execute();
-            imgUploadResponse = = new onImageUploaded() {
-            @Override
-            public void onUploadCompleted(Object result) {
-                        
-                        //handle response
-               
-            }
-        };
+            UploadImageAPI imageAPI = = new UploadImageAPI(yourApiKey);
+            try {
+                    //call api to upload the image
+                    Map imgResponse = imageAPI.upload(imagePath, folderName,tags);
+                    return imgResponse;
+                } catch (RetrofitError error) {
+                       //handle the error
+                   return imgResponse;
+                }
         
 <B>License</B>
 Under Liftoffllc license 
