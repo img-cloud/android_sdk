@@ -11,21 +11,20 @@ Each request for building a URL must have api_key which will get after signing u
 Here's an example to configure 
 
             onImageUploaded imgUploadResponse;
-
-            new ImageUpload(imagPath,your_apiKey,imgUploadResponse).execute();
+            UploadImg image;
+            
+            image = new UploadImg();
+            image.setImage(imagePath);
+            image.setApiKey(apiKey);
+            image.setFolder(folderName);
+            image.setTags(tag);
+            new ImageUpload(image,imgUploadResponse).execute();
             imgUploadResponse = = new onImageUploaded() {
             @Override
             public void onUploadCompleted(Object result) {
-
-                if(result instanceof ImgUploadResponse) {
-
-                    //handle response
-                    response = (ImgUploadResponse) result;
-
-                }else{
-                   //handle error
-                   ImageUploadError error = (ImageUploadError) result;
-                }
+                        
+                        //handle response
+               
             }
         };
         
