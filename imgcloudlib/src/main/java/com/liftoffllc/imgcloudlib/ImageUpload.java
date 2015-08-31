@@ -1,17 +1,20 @@
 package com.liftoffllc.imgcloudlib;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.liftoffllc.imgcloudlib.Error.ImageUploadError;
 import com.liftoffllc.imgcloudlib.interfaces.ApiService;
 import com.liftoffllc.imgcloudlib.interfaces.onImageUploaded;
 import com.liftoffllc.imgcloudlib.models.ImgUploadResponse;
+import com.liftoffllc.imgcloudlib.models.UploadImg;
 import com.liftoffllc.imgcloudlib.services.RestService;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 import retrofit.RetrofitError;
+import retrofit.mime.TypedByteArray;
 import retrofit.mime.TypedFile;
 import retrofit.mime.TypedString;
 
@@ -21,19 +24,19 @@ import retrofit.mime.TypedString;
 public class ImageUpload {
 
 
+    String folder,tags;
     String path;
     File nPath;
     String apikey;
     ApiService service;
     ImgUploadResponse uploadResponse;
     onImageUploaded taskComplete ;
+    UploadImg img, img1;
 
-    public ImageUpload(String path, String apikey, onImageUploaded task){
+    public ImageUpload(UploadImg img, onImageUploaded task){
 
-        this.apikey = apikey;
-        this.path = path;
+        this.img = img;
         this.taskComplete = task;
-
 
     }
 
@@ -53,35 +56,25 @@ public class ImageUpload {
                 @Override
                 protected ImgUploadResponse doInBackground(ImgUploadResponse... longs) {
                     try {
-                        nPath = new File(path);
+
 
                         service = RestService.getService();
-                        TypedFile tf = new TypedFile("image", nPath);
-                        TypedString ts = new TypedString(apikey);
-                        feed = service.getFeed(tf, ts);
+                        feed = service.getFeed(new TypedFile("image",new File(img.getImage())),new TypedString(img.getApiKey())
+                        , new TypedString(img.getFolder()),new TypedString(img.getTags()));
                         return feed;
                     } catch (RetrofitError error) {
-                        try {
-                            error.printStackTrace();
-                            err = new ImageUploadError();
 
-                            err.setMessage(error.getMessage().toString());
-                        } catch(Exception er){
-                            err = new ImageUploadError();
 
-                            err.setMessage("invalid api key");
-                            }
-                        return null;
-                    } catch (ImageUploadError ex) {
-                        ex.printStackTrace();
-                        err = ex;
-                        return null;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        err = new ImageUploadError();
-
-                        err.setMessage("Value can not be null");
-                        return null;
+                        Log.e("err", error.getMessage());
+                        error.printStackTrace();
+                        feed = new ImgUploadResponse();
+                        if(error.getResponse().equals(null)) {
+                            feed.setErrorMsg(error.getMessage().toString());
+                        }else{
+                            String json =  new String(((TypedByteArray)error.getResponse().getBody()).getBytes());
+                            feed.setErrorMsg(json);
+                        }
+                        return feed;
                     }
 
                 }
@@ -90,7 +83,7 @@ public class ImageUpload {
                 protected void onPostExecute(ImgUploadResponse imgUploadResponse) {
                     super.onPostExecute(imgUploadResponse);
 
-                    taskComplete.onUploadCompleted(imgUploadResponse == null ? err : imgUploadResponse);
+                    taskComplete.onUploadCompleted(imgUploadResponse);
 
                 }
             }.execute();
