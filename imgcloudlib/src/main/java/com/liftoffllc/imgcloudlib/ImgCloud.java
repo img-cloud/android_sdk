@@ -1,5 +1,7 @@
 package com.liftoffllc.imgcloudlib;
 
+import android.util.Log;
+
 import com.liftoffllc.imgcloudlib.interfaces.ApiService;
 
 import java.io.File;
@@ -14,34 +16,37 @@ import retrofit.mime.TypedString;
  */
 public class ImgCloud {
 
-    private String apiKey;
+
+
+    private static String apiKey;
 
     private String serviceUrl = "http://img-cloud.liftoffllc.in";
 
     private ApiService imageService = null;
     private RestAdapter restAdapter = null;
-    public ImgCloud(String apiKey){
+    public ImgCloud(){
         getService();
-        this.apiKey = apiKey;
+
     }
 
-    public ImgCloud(String apiKey, String serviceUrl){
-        getService();
-        this.apiKey = apiKey;
+    public ImgCloud(String serviceUrl){
+
+
         this.serviceUrl = serviceUrl;
+        getService();
     }
 
     public Map upload(String image){
 
         TypedFile tFile = new TypedFile("image", new File(image));
-        return imageService.uploadImage(tFile, new TypedString(apiKey), new TypedString(null), new TypedString(null));
+        return imageService.uploadImage(tFile, new TypedString(getApiKey()), new TypedString(null), new TypedString(null));
     }
 
 
     public Map upload(String image,String folderName, String tags){
 
         TypedFile tFile = new TypedFile("image", new File(image));
-        return imageService.uploadImage(tFile, new TypedString(apiKey), new TypedString(folderName), new TypedString(tags));
+        return imageService.uploadImage(tFile, new TypedString(getApiKey()), new TypedString(folderName), new TypedString(tags));
     }
 
 
@@ -49,7 +54,24 @@ public class ImgCloud {
         restAdapter = new RestAdapter.Builder()
                 .setEndpoint(serviceUrl)
                 .build();
-        return restAdapter.create(ApiService.class);
+        imageService = restAdapter.create(ApiService.class);
+        return imageService;
     }
 
+    public static String getResizedImg(String url,int w,int h){
+
+        String[] splited = url.split("/");
+        String resizedUrl = url.substring(0, url.lastIndexOf("/")) + "/h_" + h + "," + w + "/" + splited[splited.length - 1];
+        Log.e(" ", resizedUrl);
+        return resizedUrl;
+        }
+
+
+    public static String getApiKey() {
+        return apiKey;
+    }
+
+    public static void setApiKey(String apiKey) {
+        ImgCloud.apiKey = apiKey;
+    }
 }
