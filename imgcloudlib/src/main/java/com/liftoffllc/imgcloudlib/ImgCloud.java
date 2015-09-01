@@ -62,7 +62,7 @@ public class ImgCloud {
 
         String[] splited = url.split("/");
         String resizedUrl = url.substring(0, url.lastIndexOf("/")) + "/h_" + h + "," + w + "/" + splited[splited.length - 1];
-        Log.e(" ", resizedUrl);
+        
         return resizedUrl;
         }
 
