@@ -12,23 +12,24 @@ import retrofit.mime.TypedString;
 /**
  * Created by Nikita on 31/08/15.
  */
-public class UploadImageAPI {
+public class ImgCloud {
 
     private String apiKey;
-    private static final String BASE_URL = "http://img-cloud.herokuapp.com";
-    private String serviceUrl = "http://img-cloud.liftoffllc.in";
-    private RestAdapter restAdapter = null;
-    private ApiService imageService = null;
 
-    public UploadImageAPI(String apiKey){
-        restAdapter = new RestAdapter.Builder()
-                .setEndpoint(serviceUrl)
-                .build();
-        imageService = restAdapter.create(ApiService.class);
+    private String serviceUrl = "http://img-cloud.liftoffllc.in";
+
+    private ApiService imageService = null;
+    private RestAdapter restAdapter = null;
+    public ImgCloud(String apiKey){
+        getService();
         this.apiKey = apiKey;
     }
 
-
+    public ImgCloud(String apiKey, String serviceUrl){
+        getService();
+        this.apiKey = apiKey;
+        this.serviceUrl = serviceUrl;
+    }
 
     public Map upload(String image){
 
@@ -44,6 +45,11 @@ public class UploadImageAPI {
     }
 
 
-
+    private ApiService getService() {
+        restAdapter = new RestAdapter.Builder()
+                .setEndpoint(serviceUrl)
+                .build();
+        return restAdapter.create(ApiService.class);
+    }
 
 }
